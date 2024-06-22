@@ -1,0 +1,212 @@
+﻿@using OrdersDelivery.Models
+@model IEnumerable<Order>
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = this.Layout;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <div id="tableHeader">
+        <div class="tableButtons">
+            <button class="btn-open-popup" onclick="openOrderForm()">
+                Добавить заказ
+            </button>
+        </div>
+
+        <div class="tableButtons">
+            <div class="searchLine">
+                <form method="post" asp-controller="Home" asp-action="SearchOrders">
+                    <input type="text" placeholder="Введите номер заказа" name="filter" />
+                    <input type="submit" value="Поиск" />
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="orderForm" class="overlay-container">
+        <div class="popup-box">
+            <h2 style="color: gainsboro;">
+                Заказ
+            </h2>
+            <form class="form-container" method = "post" asp-controller="Home" asp-action="AddOrder">
+                <label class="form-label" for="senderCity">
+                    Город отправителя:
+                </label>
+                <input class="form-input" type="text"
+                       placeholder="Введите город отправителя"
+                       id="senderCity" name="senderCity" required>
+
+                <label class="form-label" for="senderAddress">
+                    Адрес отправителя:
+                </label>
+                <input class="form-input" type="text"
+                       placeholder="Введите адрес отправителя"
+                       id="senderAddress" name="senderAddress" required>
+
+                <label class="form-label" for="recipientCity">
+                    Город получателя:
+                </label>
+                <input class="form-input" type="text"
+                       placeholder="Введите город получателя"
+                       id="recipientCity" name="recipientCity" required>
+
+                <label class="form-label" for="recipientAddress">
+                    Адрес получателя:
+                </label>
+                <input class="form-input" type="text"
+                       placeholder="Введите адрес получателя"
+                       id="recipientAddress" name="recipientAddress" required>
+
+                <label class="form-label" for="weight">
+                    Вес груза (кг):
+                </label>
+                <input class="form-input" type="number"
+                       placeholder="Введите вес груза в кг"
+                       id="weight" name="weight" required>
+
+                <label class="form-label" for="pickupDate">
+                    Дата забора груза:
+                </label>
+                <input class="form-input" type="date"
+                       id="pickupDate" name="pickupDate" required>
+
+                <div class="formButtons">
+                    <button class="btn-submit" type="submit">
+                        Сохранить
+                    </button>
+                </div>
+            </form>
+            <div class="formButtons">
+                <button class="btn-close-popup" onclick="openOrderForm()">
+                    Закрыть
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="orderReadForm" class="overlay-container">
+        <div class="popup-box">
+            <h2 style="color: gainsboro;">
+                Заказ
+            </h2>
+            <form class="form-container">
+                <label class="form-label" for="number">
+                    Номер заказа:
+                </label>
+                <input class="form-input" type="text" readonly
+                       id="number" name="number">
+
+                <label class="form-label" for="senderCity">
+                    Город отправителя:
+                </label>
+                <input class="form-input" type="text" readonly
+                       id="senderCity" name="senderCity">
+
+                <label class="form-label" for="senderAddress">
+                    Адрес отправителя:
+                </label>
+                <input class="form-input" type="text" readonly
+                       id="senderAddress" name="senderAddress">
+
+                <label class="form-label" for="recipientCity">
+                    Город получателя:
+                </label>
+                <input class="form-input" type="text" readonly
+                       id="recipientCity" name="recipientCity">
+
+                <label class="form-label" for="recipientAddress">
+                    Адрес получателя:
+                </label>
+                <input class="form-input" type="text" readonly
+                       id="recipientAddress" name="recipientAddress">
+
+                <label class="form-label" for="weight">
+                    Вес груза (кг):
+                </label>
+                <input class="form-input" type="number" readonly
+                       id="weight" name="weight">
+
+                <label class="form-label" for="pickupDate">
+                    Дата забора груза:
+                </label>
+                <input class="form-input" type="text" readonly
+                       id="pickupDate" name="pickupDate">
+            </form>
+
+            <button class="btn-close-popup" onclick="openOrderReadForm()">
+                Закрыть
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+        function openOrderForm() {
+            const overlay = document.getElementById('orderForm');
+            overlay.classList.toggle('show');
+        }
+
+        function openOrderReadForm() {
+            const overlay = document.getElementById('orderReadForm');
+            overlay.classList.toggle('show');
+        }
+    </script>
+
+    
+    <table class="table" id ="ordersTable">
+        <tr>
+            <th>Номер заказа</th>
+            <th>Город отправителя</th>
+            <th>Адрес отправителя</th>
+            <th>Город получателя</th>
+            <th>Адрес получателя</th>
+            <th>Вес груза</th>
+            <th>Дата забора груза</th>
+        </tr>
+        @foreach (Order order in Model)
+        {
+            <tr>
+                <td id="numberField">@order.Number</td>
+                <td id="senderCityField">@order.SenderCity</td>
+                <td id="senderAddressField">@order.SenderAddress</td>
+                <td id="recipientCityField">@order.RecipientCity</td>
+                <td id="recipientAddressField">@order.RecipientAddress</td>
+                <td id="weightField">@order.Weight</td>
+                <td id="pickupDateField">@order.PickupDate.ToShortDateString()</td>
+            </tr>
+        }
+    </table>
+
+
+    <script>
+        const rows = document.querySelectorAll("tr");
+        rows.forEach(row => {
+            row.addEventListener("click", () => {
+                openRowInfo(row)
+            });
+        });
+    </script>
+
+    <script>
+        function openRowInfo(row) {
+            var overlay = document.getElementById('orderReadForm');
+
+            const items = overlay.querySelectorAll("input");
+            items.forEach(item => {
+                var fieldId = item.getAttribute("id");
+                var rowValue = row.querySelector(`td[id = ${fieldId + 'Field'}]`).innerHTML;
+                item.setAttribute("value", rowValue);
+            });
+
+            overlay.classList.toggle('show');
+        }
+    </script>
+</body>
+</html>
