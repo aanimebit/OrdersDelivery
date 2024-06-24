@@ -28,7 +28,7 @@ namespace OrdersDelivery.Controllers
             {
                 _ordersService.AddOrder(order);
             }
-            catch (Exception ex) // I decided only to write Exception into log because all field in Order object are required
+            catch (Exception ex) // I decided only to write Exception into log because all fields in Order object are required.
             {
                 _logger.LogError(ex.Message);
             }
