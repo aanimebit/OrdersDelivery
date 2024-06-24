@@ -19,10 +19,7 @@ namespace OrdersDelivery.Controllers
             _ordersService = ordersService;
         }
 
-        public IActionResult Index()
-        {
-            return View(_ordersService.GetOrders());
-        }
+        public IActionResult Index() => View(_ordersService.GetOrders());
 
         [HttpPost]
         public IActionResult AddOrder(Order order)
@@ -31,19 +28,16 @@ namespace OrdersDelivery.Controllers
             {
                 _ordersService.AddOrder(order);
             }
-            catch (Exception ex)
+            catch (Exception ex) // I decided only to write Exception into log because all field in Order object are required
             {
                 _logger.LogError(ex.Message);
             }
 
-            return View("Index", _ordersService.GetOrders());
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public IActionResult SearchOrders(string filter)
-        {
-            return View("Index", _ordersService.SearchOrders(filter));
-        }
+        public IActionResult SearchOrders(string filter) => View("Index", _ordersService.SearchOrders(filter));
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

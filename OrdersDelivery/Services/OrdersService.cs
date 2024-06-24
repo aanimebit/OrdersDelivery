@@ -11,15 +11,16 @@ namespace OrdersDelivery.Services
     {
         readonly AppDbContext _context;
 
-        public OrdersService(AppDbContext context) 
-        { 
-            _context = context;
-        }
+        public OrdersService(AppDbContext context) => _context = context;
 
+        /*
+         * In real systems all dates are stored in the database in UTC format
+         * and turns into a local time on frontend, so i model it by explicit conversion at line 27.
+         */
         public List<Order> GetOrders()
         {
             List<Order> orders = new List<Order>();
-            orders = _context.Orders.ToList();
+            orders = _context.Orders.OrderByDescending(o => o.PickupDate).ToList();
 
             foreach (Order order in orders)
             {
@@ -35,12 +36,16 @@ namespace OrdersDelivery.Services
             
             if (!String.IsNullOrEmpty(filter))
             {
-                orders = orders.AsQueryable().Where(o => o.Number.Contains(filter)).ToList();
+                orders = orders.Where(o => o.Number.Contains(filter)).ToList();
             }
 
             return orders;
         }
 
+        /*
+         * In real systems all dates are stored in the database in UTC format
+         * and turns to a local time on frontend, so i model it by explicit conversion at line 51.
+         */
         public void AddOrder(Order order)
         {
             order.PickupDate = order.PickupDate.ToUniversalTime();
@@ -49,13 +54,12 @@ namespace OrdersDelivery.Services
             _context.SaveChanges();
         }
 
-        public string GenerateOrderNumber(Order order)
-        {
-            StringBuilder stringBuilder = new StringBuilder(order.GetHashCode().ToString());
-            stringBuilder.Append(order.SenderCity[0]);
-            stringBuilder.Append(order.RecipientCity[0]);
-
-            return stringBuilder.ToString();
-        }
+        /*
+         * Generating of Order Number is based on object hash & others but not only on hash, 
+         * because GetHashCode() can return not unique hash.
+         * Using of other parameters not give guarantees that Order Number will be unique, 
+         * but it rases chances of it, so i decided that it will be enough.
+         */
+        public string GenerateOrderNumber(Order order) => $"{order.GetHashCode()}-{order.SenderCity[0]}{order.RecipientCity[0]}-{order.Weight}";
     }
 }
