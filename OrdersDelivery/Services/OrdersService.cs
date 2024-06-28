@@ -19,8 +19,7 @@ namespace OrdersDelivery.Services
          */
         public List<Order> GetOrders()
         {
-            List<Order> orders = new List<Order>();
-            orders = _context.Orders.OrderByDescending(o => o.PickupDate).ToList();
+            List<Order> orders = _context.Orders.OrderByDescending(o => o.PickupDate).ToList();
 
             foreach (Order order in orders)
             {
